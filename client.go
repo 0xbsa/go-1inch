@@ -4,44 +4,29 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 const (
 	inchURL = "https://api.1inch.io/v5.0/"
 )
 
-type Network string
+type Network int64
 
 const (
-	Eth         Network = "eth"
-	Bsc         Network = "bsc"
-	Matic       Network = "matic"
-	Optimism    Network = "optimism"
-	Arbitrum    Network = "arbitrum"
-	GnosisChain Network = "gnosis"
-	Avalanche   Network = "avalanche"
-	Fantom      Network = "fantom"
-	Klaytn      Network = "klaytn"
-	Auror       Network = "auror"
-)
-
-var (
-	networks = map[Network]string{
-		Eth:         "1",
-		Bsc:         "56",
-		Matic:       "137",
-		Optimism:    "10",
-		Arbitrum:    "42161",
-		GnosisChain: "100",
-		Avalanche:   "43114",
-		Fantom:      "250",
-		Klaytn:      "8217",
-		Auror:       "1313161554",
-	}
+	Eth         Network = 1
+	Bsc         Network = 56
+	Matic       Network = 137
+	Optimism    Network = 10
+	Arbitrum    Network = 42161
+	GnosisChain Network = 100
+	Avalanche   Network = 43114
+	Fantom      Network = 250
+	Klaytn      Network = 8217
+	Auror       Network = 1313161554
 )
 
 func NewClient() *Client {
@@ -65,11 +50,7 @@ func setQueryParam(endpoint *string, params []map[string]interface{}) {
 }
 
 func (c *Client) doRequest(ctx context.Context, net Network, endpoint, method string, expRes interface{}, reqData interface{}, opts ...map[string]interface{}) (int, error) {
-	n, ok := networks[net]
-	if !ok {
-		return 0, errors.New("invalid network")
-	}
-	callURL := fmt.Sprintf("%s%s%s", inchURL, n, endpoint)
+	callURL := fmt.Sprintf("%s%s%s", inchURL, strconv.FormatInt(int64(net), 10), endpoint)
 
 	var dataReq []byte
 	var err error

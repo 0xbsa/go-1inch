@@ -25,7 +25,7 @@ func TestHealthCheckReponse(t *testing.T) {
 func TestQuoteWithoutOpts(t *testing.T) {
 	client := go1inch.NewClient()
 
-	res, _, err := client.Quote(context.Background(), "eth",
+	res, _, err := client.Quote(context.Background(), 1,
 		"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
 		"0x6b175474e89094c44da98b954eedeac495271d0f",
 		"100000000000000000000",
@@ -39,7 +39,7 @@ func TestQuoteWithoutOpts(t *testing.T) {
 
 func TestQuoteWithOpts(t *testing.T) {
 	client := go1inch.NewClient()
-	res, _, err := client.Quote(context.Background(), "eth",
+	res, _, err := client.Quote(context.Background(), 1,
 		"0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
 		"0x111111111117dc0aa78b770fa6a738034120c302",
 		"100000000000000000000",
@@ -62,7 +62,7 @@ func TestQuoteWithOpts(t *testing.T) {
 func TestQuoteWithMissingParameter(t *testing.T) {
 	client := go1inch.NewClient()
 
-	_, _, err := client.Quote(context.Background(), "eth",
+	_, _, err := client.Quote(context.Background(), 1,
 		"",
 		"0x6b175474e89094c44da98b954eedeac495271d0f",
 		"100000000000000000000",
@@ -76,7 +76,7 @@ func TestQuoteWithMissingParameter(t *testing.T) {
 func TestSwapWithoutOpts(t *testing.T) {
 	client := go1inch.NewClient()
 
-	res, _, err := client.Swap(context.Background(), "eth",
+	res, _, err := client.Swap(context.Background(), 1,
 		"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
 		"0x6b175474e89094c44da98b954eedeac495271d0f",
 		"100000000000000",
@@ -93,7 +93,7 @@ func TestSwapWithoutOpts(t *testing.T) {
 func TestSwapWithOpts(t *testing.T) {
 	client := go1inch.NewClient()
 
-	res, _, err := client.Swap(context.Background(), "eth",
+	res, _, err := client.Swap(context.Background(), 1,
 		"0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
 		"0x111111111117dc0aa78b770fa6a738034120c302",
 		"100000000000000000000",
@@ -122,7 +122,7 @@ func TestSwapWithOpts(t *testing.T) {
 func TestSwapWithMissingParameter(t *testing.T) {
 	client := go1inch.NewClient()
 
-	_, _, err := client.Swap(context.Background(), "eth",
+	_, _, err := client.Swap(context.Background(), 1,
 		"",
 		"0x6b175474e89094c44da98b954eedeac495271d0f",
 		"100000000000000000000",
@@ -138,7 +138,7 @@ func TestSwapWithMissingParameter(t *testing.T) {
 func TestGetLiquiditySouces(t *testing.T) {
 	client := go1inch.NewClient()
 
-	res, _, err := client.LiquiditySouces(context.Background(), "matic")
+	res, _, err := client.LiquiditySouces(context.Background(), 137)
 	if err != nil {
 		t.Error(err)
 	}
@@ -148,7 +148,7 @@ func TestGetLiquiditySouces(t *testing.T) {
 func TestGetTokens(t *testing.T) {
 	client := go1inch.NewClient()
 
-	res, _, err := client.Tokens(context.Background(), "matic")
+	res, _, err := client.Tokens(context.Background(), 137)
 	if err != nil {
 		t.Error(err)
 	}
@@ -157,7 +157,7 @@ func TestGetTokens(t *testing.T) {
 
 func TestApproveSpender(t *testing.T) {
 	client := go1inch.NewClient()
-	res, _, err := client.ApproveSpender(context.Background(), "bsc")
+	res, _, err := client.ApproveSpender(context.Background(), 56)
 	if err != nil {
 		t.Error(err)
 	}
@@ -168,7 +168,7 @@ func TestApproveAllowance(t *testing.T) {
 	const TOKEN_ADDRESS = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"  // WBNB
 	const WALLET_ADDRESS = "0xC49926C4124cEe1cbA0Ea94Ea31a6c12318df947" // Wallet that has Router V4 approved for WBNB
 	client := go1inch.NewClient()
-	res, _, err := client.ApproveAllowance(context.Background(), "bsc", TOKEN_ADDRESS, WALLET_ADDRESS)
+	res, _, err := client.ApproveAllowance(context.Background(), 56, TOKEN_ADDRESS, WALLET_ADDRESS)
 	if err != nil {
 		t.Error(err)
 	}
@@ -179,7 +179,7 @@ func TestApproveTransactionWithoutOpts(t *testing.T) {
 	client := go1inch.NewClient()
 	res, _, err := client.ApproveTransaction(
 		context.Background(),
-		"eth",
+		1,
 		"0x6b175474e89094c44da98b954eedeac495271d0f",
 		nil,
 	)
@@ -193,7 +193,7 @@ func TestApproveTransactionWithOpts(t *testing.T) {
 	client := go1inch.NewClient()
 	res, _, err := client.ApproveTransaction(
 		context.Background(),
-		"eth",
+		1,
 		"0x6b175474e89094c44da98b954eedeac495271d0f",
 		&go1inch.ApproveTransactionOpts{
 			Amount: "100000",
@@ -207,7 +207,7 @@ func TestApproveTransactionWithOpts(t *testing.T) {
 
 func TestWBTC(t *testing.T) {
 	client := go1inch.NewClient()
-	_, code, err := client.Quote(context.Background(), "matic", "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6", "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", "100000000", nil)
+	_, code, err := client.Quote(context.Background(), 137, "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6", "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", "100000000", nil)
 	if err != nil {
 		t.Error(err)
 	}
