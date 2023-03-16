@@ -6,7 +6,7 @@ import "context"
 func (c *Client) Tokens(ctx context.Context, network Network) (*TokensRes, int, error) {
 	endpoint := "/tokens"
 	var dataRes TokensRes
-	statusCode, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil)
+	statusCode, _, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil)
 	if err != nil {
 		return nil, statusCode, err
 	}

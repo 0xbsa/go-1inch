@@ -26,7 +26,7 @@ func (c *Client) ApproveTransaction(ctx context.Context, network Network, tokenA
 	}
 
 	var dataRes ApproveTransactionRes
-	statusCode, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil, queries)
+	statusCode, _, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil, queries)
 	if err != nil {
 		return nil, statusCode, err
 	}
@@ -37,7 +37,7 @@ func (c *Client) ApproveTransaction(ctx context.Context, network Network, tokenA
 func (c *Client) ApproveSpender(ctx context.Context, network Network) (*ApproveSpenderRes, int, error) {
 	endpoint := "/approve/spender"
 	var dataRes ApproveSpenderRes
-	statusCode, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil, nil)
+	statusCode, _, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil, nil)
 	if err != nil {
 		return nil, statusCode, err
 	}
@@ -56,7 +56,7 @@ func (c *Client) ApproveAllowance(ctx context.Context, network Network, tokenAdd
 	queries["tokenAddress"] = tokenAddress
 	queries["walletAddress"] = walletAddress
 	var dataRes ApproveAllowanceRes
-	statusCode, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil, queries)
+	statusCode, _, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil, queries)
 	if err != nil {
 		return nil, statusCode, err
 	}

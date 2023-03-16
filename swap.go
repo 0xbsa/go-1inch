@@ -3,14 +3,15 @@ package go1inch
 import (
 	"context"
 	"errors"
+	"net/http"
 )
 
 // Swap gets swap for an aggregated swap which can be used with a web3 provider to send the transaction
-func (c *Client) Swap(ctx context.Context, network Network, fromTokenAddress, toTokenAddress, amount, fromAddress string, slippage int64, opts *SwapOpts) (*SwapRes, int, error) {
+func (c *Client) Swap(ctx context.Context, network Network, fromTokenAddress, toTokenAddress, amount, fromAddress string, slippage int64, opts *SwapOpts) (*SwapRes, int, http.Header, error) {
 	endpoint := "/swap"
 
 	if fromTokenAddress == "" || toTokenAddress == "" || amount == "" || fromAddress == "" {
-		return nil, 0, errors.New("required parameter is missing")
+		return nil, 0, nil, errors.New("required parameter is missing")
 	}
 
 	var queries = make(map[string]interface{})
@@ -62,9 +63,9 @@ func (c *Client) Swap(ctx context.Context, network Network, fromTokenAddress, to
 	}
 
 	var dataRes SwapRes
-	statusCode, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil, queries)
+	statusCode, headers, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil, queries)
 	if err != nil {
-		return nil, statusCode, err
+		return nil, statusCode, headers, err
 	}
-	return &dataRes, statusCode, nil
+	return &dataRes, statusCode, headers, nil
 }

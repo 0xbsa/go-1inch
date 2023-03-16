@@ -8,7 +8,7 @@ import (
 func (c *Client) LiquiditySouces(ctx context.Context, network Network) (*LiquiditySoucesRes, int, error) {
 	endpoint := "/liquidity-sources"
 	var dataRes LiquiditySoucesRes
-	statusCode, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil)
+	statusCode, _, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil)
 	if err != nil {
 		return nil, statusCode, err
 	}

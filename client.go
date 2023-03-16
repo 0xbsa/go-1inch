@@ -49,7 +49,7 @@ func setQueryParam(endpoint *string, params []map[string]interface{}) {
 	}
 }
 
-func (c *Client) doRequest(ctx context.Context, net Network, endpoint, method string, expRes interface{}, reqData interface{}, opts ...map[string]interface{}) (int, error) {
+func (c *Client) doRequest(ctx context.Context, net Network, endpoint, method string, expRes interface{}, reqData interface{}, opts ...map[string]interface{}) (int, http.Header, error) {
 	callURL := fmt.Sprintf("%s%s%s", inchURL, strconv.FormatInt(int64(net), 10), endpoint)
 
 	var dataReq []byte
@@ -58,7 +58,7 @@ func (c *Client) doRequest(ctx context.Context, net Network, endpoint, method st
 	if reqData != nil {
 		dataReq, err = json.Marshal(reqData)
 		if err != nil {
-			return 0, err
+			return 0, nil, err
 		}
 	}
 
@@ -67,18 +67,18 @@ func (c *Client) doRequest(ctx context.Context, net Network, endpoint, method st
 	}
 	req, err := http.NewRequestWithContext(ctx, method, callURL, bytes.NewBuffer(dataReq))
 	if err != nil {
-		return 0, err
+		return 0, nil, err
 	}
 
 	resp, err := c.Http.Do(req)
 	if err != nil {
-		return 0, err
+		return 0, nil, err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return 0, err
+		return 0, nil, err
 	}
 
 	switch resp.StatusCode {
@@ -86,12 +86,12 @@ func (c *Client) doRequest(ctx context.Context, net Network, endpoint, method st
 		if expRes != nil {
 			err = json.Unmarshal(body, expRes)
 			if err != nil {
-				return 0, err
+				return 0, resp.Header, err
 			}
 		}
-		return resp.StatusCode, nil
+		return resp.StatusCode, resp.Header, nil
 
 	default:
-		return resp.StatusCode, fmt.Errorf("%s", body)
+		return resp.StatusCode, resp.Header, fmt.Errorf("%s", body)
 	}
 }

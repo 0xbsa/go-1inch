@@ -8,7 +8,7 @@ import (
 func (c *Client) Healthcheck(ctx context.Context, network Network) (*HealthcheckRes, int, error) {
 	endpoint := "/healthcheck"
 	var dataRes HealthcheckRes
-	statusCode, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil)
+	statusCode, _, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil)
 	if err != nil {
 		return nil, statusCode, err
 	}

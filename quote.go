@@ -3,14 +3,15 @@ package go1inch
 import (
 	"context"
 	"errors"
+	"net/http"
 )
 
 // Quote gets quote for an aggregated swap which can be used with a web3 provider to send the transaction
-func (c *Client) Quote(ctx context.Context, network Network, fromTokenAddress, toTokenAddress, amount string, opts *QuoteOpts) (*QuoteRes, int, error) {
+func (c *Client) Quote(ctx context.Context, network Network, fromTokenAddress, toTokenAddress, amount string, opts *QuoteOpts) (*QuoteRes, int, http.Header, error) {
 	endpoint := "/quote"
 
 	if fromTokenAddress == "" || toTokenAddress == "" || amount == "" {
-		return nil, 0, errors.New("required parameter is missing")
+		return nil, 0, nil, errors.New("required parameter is missing")
 	}
 
 	var queries = make(map[string]interface{})
@@ -48,9 +49,9 @@ func (c *Client) Quote(ctx context.Context, network Network, fromTokenAddress, t
 	}
 
 	var dataRes QuoteRes
-	statusCode, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil, queries)
+	statusCode, headers, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil, queries)
 	if err != nil {
-		return nil, statusCode, err
+		return nil, statusCode, headers, err
 	}
-	return &dataRes, statusCode, nil
+	return &dataRes, statusCode, headers, nil
 }
