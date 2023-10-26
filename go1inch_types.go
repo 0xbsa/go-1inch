@@ -3,7 +3,8 @@ package go1inch
 import "net/http"
 
 type Client struct {
-	Http *http.Client
+	Http   *http.Client
+	apiKey string
 }
 
 type HealthcheckRes struct {
@@ -64,6 +65,10 @@ type QuoteOpts struct {
 	// maximum number of main route parts
 	// default: Ethereum: 10, Binance: 10; max: Ethereum: 50, Binance: 50 !should be the same for quote and swap!
 	MainRouteParts string
+
+	IncludeGas        bool
+	IncludeProtocols  bool
+	IncludeTokensInfo bool
 }
 
 type Token struct {
@@ -87,14 +92,14 @@ type QuoteRes struct {
 	// parameters of a token to buy
 	ToToken Token `json:"ToToken"`
 	// input amount of fromToken in minimal divisible units
-	ToTokenAmount string `json:"toTokenAmount"`
+	ToAmount string `json:"toAmount"`
 	// result amount of toToken in minimal divisible units
 	FromTokenAmount string `json:"fromTokenAmount"`
 	// route of the trade
 	Protocols []Protocol `json:"protocols"`
 	// rough estimated amount of the gas limit for used protocols;
 	// do not use estimatedGas from the quote method as the gas limit of a transaction
-	EstimatedGas int64 `json:"estimatedGas"`
+	Gas int64 `json:"gas"`
 }
 
 type SwapOpts struct {
@@ -102,7 +107,7 @@ type SwapOpts struct {
 	Protocols string
 	// address that will receive a purchased token
 	// Receiver of destination currency. default: fromAddress
-	DestReceiver string
+	Receiver string
 	// referrer's address
 	ReferrerAddress string
 	// referrer's fee in percentage
@@ -134,6 +139,10 @@ type SwapOpts struct {
 	// maximum number of main route parts
 	// default: Ethereum: 10, Binance: 10; max: Ethereum: 50, Binance: 50 !should be the same for quote and swap!
 	MainRouteParts string
+
+	IncludeGas        bool
+	IncludeProtocols  bool
+	IncludeTokensInfo bool
 }
 
 type Tx struct {
@@ -157,7 +166,7 @@ type SwapRes struct {
 	// parameters of a token to buy
 	ToToken Token `json:"ToToken"`
 	// input amount of fromToken in minimal divisible units
-	ToTokenAmount string `json:"toTokenAmount"`
+	ToAmount string `json:"toAmount"`
 	// result amount of toToken in minimal divisible units
 	FromTokenAmount string `json:"fromTokenAmount"`
 	// route of the trade

@@ -5,13 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 )
 
 const (
-	inchURL = "https://api.1inch.io/v5.0/"
+	inchURL = "https://api.1inch.dev/swap/v5.2/"
 )
 
 type Network int64
@@ -29,14 +29,19 @@ const (
 	Auror       Network = 1313161554
 )
 
-func NewClient() *Client {
+func NewDefaultClient() *Client {
+	return NewClient("", http.DefaultClient)
+}
+
+func NewClient(apiKey string, httpClient *http.Client) *Client {
 	return &Client{
-		Http: &http.Client{},
+		Http:   httpClient,
+		apiKey: apiKey,
 	}
 }
 
 func setQueryParam(endpoint *string, params []map[string]interface{}) {
-	var first = true
+	first := true
 	for _, param := range params {
 		for i := range param {
 			if first {
@@ -70,19 +75,25 @@ func (c *Client) doRequest(ctx context.Context, net Network, endpoint, method st
 		return 0, nil, err
 	}
 
+	req.Header.Add("Content-type", "application/json")
+	req.Header.Add("Accept", "application/json")
+	if len(c.apiKey) > 0 {
+		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.apiKey))
+	}
+
 	resp, err := c.Http.Do(req)
 	if err != nil {
 		return 0, nil, err
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return 0, nil, err
 	}
 
 	switch resp.StatusCode {
-	case 200:
+	case http.StatusOK:
 		if expRes != nil {
 			err = json.Unmarshal(body, expRes)
 			if err != nil {

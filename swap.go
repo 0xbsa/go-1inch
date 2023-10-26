@@ -7,19 +7,19 @@ import (
 )
 
 // Swap gets swap for an aggregated swap which can be used with a web3 provider to send the transaction
-func (c *Client) Swap(ctx context.Context, network Network, fromTokenAddress, toTokenAddress, amount, fromAddress string, slippage int64, opts *SwapOpts) (*SwapRes, int, http.Header, error) {
+func (c *Client) Swap(ctx context.Context, network Network, src, dst, amount, fromAddress string, slippage int64, opts *SwapOpts) (*SwapRes, int, http.Header, error) {
 	endpoint := "/swap"
 
-	if fromTokenAddress == "" || toTokenAddress == "" || amount == "" || fromAddress == "" {
+	if src == "" || dst == "" || amount == "" || fromAddress == "" {
 		return nil, 0, nil, errors.New("required parameter is missing")
 	}
 
-	var queries = make(map[string]interface{})
+	queries := make(map[string]interface{})
 
-	queries["fromTokenAddress"] = fromTokenAddress
-	queries["toTokenAddress"] = toTokenAddress
+	queries["src"] = src
+	queries["dst"] = dst
 	queries["amount"] = amount
-	queries["fromAddress"] = fromAddress
+	queries["from"] = fromAddress
 	queries["slippage"] = slippage
 
 	if opts != nil {
@@ -30,11 +30,11 @@ func (c *Client) Swap(ctx context.Context, network Network, fromTokenAddress, to
 		if opts.Protocols != "" {
 			queries["protocols"] = opts.Protocols
 		}
-		if opts.DestReceiver != "" {
-			queries["destReceiver"] = opts.DestReceiver
+		if opts.Receiver != "" {
+			queries["receiver"] = opts.Receiver
 		}
 		if opts.ReferrerAddress != "" {
-			queries["referrerAddress"] = opts.ReferrerAddress
+			queries["referrer"] = opts.ReferrerAddress
 		}
 		if opts.Fee != "" {
 			queries["fee"] = opts.Fee
@@ -60,6 +60,17 @@ func (c *Client) Swap(ctx context.Context, network Network, fromTokenAddress, to
 		if opts.MainRouteParts != "" {
 			queries["mainRouteParts"] = opts.MainRouteParts
 		}
+
+		if opts.IncludeGas {
+			queries["includeGas"] = true
+		}
+		if opts.IncludeProtocols {
+			queries["includeProtocols"] = true
+		}
+		if opts.IncludeTokensInfo {
+			queries["includeTokensInfo"] = true
+		}
+
 	}
 
 	var dataRes SwapRes

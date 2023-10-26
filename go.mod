@@ -1,3 +1,3 @@
-module github.com/jon4hz/go-1inch
+module github.com/0xbsa/go-1inch
 
-go 1.19
+go 1.21

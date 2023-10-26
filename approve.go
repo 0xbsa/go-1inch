@@ -3,6 +3,7 @@ package go1inch
 import (
 	"context"
 	"errors"
+	"net/http"
 )
 
 // ApproveTransaction gets calldata for approve transaction and spender address
@@ -15,7 +16,7 @@ func (c *Client) ApproveTransaction(ctx context.Context, network Network, tokenA
 		return nil, 0, errors.New("required parameter is missing")
 	}
 
-	var queries = make(map[string]interface{})
+	queries := make(map[string]interface{})
 
 	queries["tokenAddress"] = tokenAddress
 
@@ -26,7 +27,7 @@ func (c *Client) ApproveTransaction(ctx context.Context, network Network, tokenA
 	}
 
 	var dataRes ApproveTransactionRes
-	statusCode, _, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil, queries)
+	statusCode, _, err := c.doRequest(ctx, network, endpoint, http.MethodGet, &dataRes, nil, queries)
 	if err != nil {
 		return nil, statusCode, err
 	}
@@ -37,7 +38,7 @@ func (c *Client) ApproveTransaction(ctx context.Context, network Network, tokenA
 func (c *Client) ApproveSpender(ctx context.Context, network Network) (*ApproveSpenderRes, int, error) {
 	endpoint := "/approve/spender"
 	var dataRes ApproveSpenderRes
-	statusCode, _, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil, nil)
+	statusCode, _, err := c.doRequest(ctx, network, endpoint, http.MethodGet, &dataRes, nil, nil)
 	if err != nil {
 		return nil, statusCode, err
 	}
@@ -51,12 +52,12 @@ func (c *Client) ApproveAllowance(ctx context.Context, network Network, tokenAdd
 		return nil, 0, errors.New("required parameter is missing")
 	}
 
-	var queries = make(map[string]interface{})
+	queries := make(map[string]interface{})
 
 	queries["tokenAddress"] = tokenAddress
 	queries["walletAddress"] = walletAddress
 	var dataRes ApproveAllowanceRes
-	statusCode, _, err := c.doRequest(ctx, network, endpoint, "GET", &dataRes, nil, queries)
+	statusCode, _, err := c.doRequest(ctx, network, endpoint, http.MethodGet, &dataRes, nil, queries)
 	if err != nil {
 		return nil, statusCode, err
 	}

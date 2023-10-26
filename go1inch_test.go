@@ -4,42 +4,42 @@ import (
 	"context"
 	"testing"
 
-	go1inch "github.com/jon4hz/go-1inch"
+	go1inch "github.com/0xbsa/go-1inch"
 )
 
 func TestHealthCheckReponse(t *testing.T) {
-	client := go1inch.NewClient()
+	client := go1inch.NewDefaultClient()
 	networks := []go1inch.Network{go1inch.Eth, go1inch.Bsc, go1inch.Matic, go1inch.Optimism, go1inch.Arbitrum}
 	for _, network := range networks {
 		res, _, err := client.Healthcheck(context.Background(), network)
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 		if res.Status != "OK" {
 			t.Errorf("healthcheck returned %s, expected OK", res.Status)
 		}
-		t.Logf("Network healthcheck %s: %v", network, res)
+		t.Logf("Network healthcheck %d: %v", network, res)
 	}
 }
 
 func TestQuoteWithoutOpts(t *testing.T) {
-	client := go1inch.NewClient()
+	client := go1inch.NewDefaultClient()
 
-	res, _, err := client.Quote(context.Background(), 1,
+	res, _, _, err := client.Quote(context.Background(), 1,
 		"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
 		"0x6b175474e89094c44da98b954eedeac495271d0f",
 		"100000000000000000000",
 		nil,
 	)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	t.Log(res)
 }
 
 func TestQuoteWithOpts(t *testing.T) {
-	client := go1inch.NewClient()
-	res, _, err := client.Quote(context.Background(), 1,
+	client := go1inch.NewDefaultClient()
+	res, _, _, err := client.Quote(context.Background(), 1,
 		"0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
 		"0x111111111117dc0aa78b770fa6a738034120c302",
 		"100000000000000000000",
@@ -54,15 +54,15 @@ func TestQuoteWithOpts(t *testing.T) {
 		},
 	)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	t.Log(res)
 }
 
 func TestQuoteWithMissingParameter(t *testing.T) {
-	client := go1inch.NewClient()
+	client := go1inch.NewDefaultClient()
 
-	_, _, err := client.Quote(context.Background(), 1,
+	_, _, _, err := client.Quote(context.Background(), 1,
 		"",
 		"0x6b175474e89094c44da98b954eedeac495271d0f",
 		"100000000000000000000",
@@ -74,9 +74,9 @@ func TestQuoteWithMissingParameter(t *testing.T) {
 }
 
 func TestSwapWithoutOpts(t *testing.T) {
-	client := go1inch.NewClient()
+	client := go1inch.NewDefaultClient()
 
-	res, _, err := client.Swap(context.Background(), 1,
+	res, _, _, err := client.Swap(context.Background(), 1,
 		"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
 		"0x6b175474e89094c44da98b954eedeac495271d0f",
 		"100000000000000",
@@ -85,44 +85,45 @@ func TestSwapWithoutOpts(t *testing.T) {
 		nil,
 	)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
-	t.Log(res)
+	t.Logf("%#v", res)
 }
 
 func TestSwapWithOpts(t *testing.T) {
-	client := go1inch.NewClient()
+	client := go1inch.NewDefaultClient()
 
-	res, _, err := client.Swap(context.Background(), 1,
+	res, _, _, err := client.Swap(context.Background(), 1,
 		"0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
 		"0x111111111117dc0aa78b770fa6a738034120c302",
 		"100000000000000000000",
 		"0x52bc44d5378309ee2abf1539bf71de1b7d7be3b5",
 		1,
 		&go1inch.SwapOpts{
-			DestReceiver:     "0x52bc44d5378309ee2abf1539bf71de1b7d7be3b5",
-			ReferrerAddress:  "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B",
-			Fee:              "1",
-			GasPrice:         "1",
-			BurnChi:          false,
-			ComplexityLevel:  "2",
-			AllowPartialFill: true,
-			DisableEstimate:  true,
-			GasLimit:         "10000000",
-			Parts:            "50",
-			VirtualParts:     "50",
-			MainRouteParts:   "10",
+			Receiver:          "0x52bc44d5378309ee2abf1539bf71de1b7d7be3b5",
+			ReferrerAddress:   "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B",
+			Fee:               "1",
+			GasPrice:          "1",
+			BurnChi:           false,
+			ComplexityLevel:   "2",
+			AllowPartialFill:  true,
+			DisableEstimate:   true,
+			GasLimit:          "10000000",
+			Parts:             "50",
+			VirtualParts:      "50",
+			MainRouteParts:    "10",
+			IncludeTokensInfo: true,
 		})
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
-	t.Log(res)
+	t.Logf("%#v", res)
 }
 
 func TestSwapWithMissingParameter(t *testing.T) {
-	client := go1inch.NewClient()
+	client := go1inch.NewDefaultClient()
 
-	_, _, err := client.Swap(context.Background(), 1,
+	_, _, _, err := client.Swap(context.Background(), 1,
 		"",
 		"0x6b175474e89094c44da98b954eedeac495271d0f",
 		"100000000000000000000",
@@ -136,30 +137,30 @@ func TestSwapWithMissingParameter(t *testing.T) {
 }
 
 func TestGetLiquiditySouces(t *testing.T) {
-	client := go1inch.NewClient()
+	client := go1inch.NewDefaultClient()
 
 	res, _, err := client.LiquiditySouces(context.Background(), 137)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	t.Log(res)
 }
 
 func TestGetTokens(t *testing.T) {
-	client := go1inch.NewClient()
+	client := go1inch.NewDefaultClient()
 
 	res, _, err := client.Tokens(context.Background(), 137)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	t.Log(res)
 }
 
 func TestApproveSpender(t *testing.T) {
-	client := go1inch.NewClient()
+	client := go1inch.NewDefaultClient()
 	res, _, err := client.ApproveSpender(context.Background(), 56)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	t.Log(res)
 }
@@ -167,16 +168,16 @@ func TestApproveSpender(t *testing.T) {
 func TestApproveAllowance(t *testing.T) {
 	const TOKEN_ADDRESS = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"  // WBNB
 	const WALLET_ADDRESS = "0xC49926C4124cEe1cbA0Ea94Ea31a6c12318df947" // Wallet that has Router V4 approved for WBNB
-	client := go1inch.NewClient()
+	client := go1inch.NewDefaultClient()
 	res, _, err := client.ApproveAllowance(context.Background(), 56, TOKEN_ADDRESS, WALLET_ADDRESS)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	t.Log(res)
 }
 
 func TestApproveTransactionWithoutOpts(t *testing.T) {
-	client := go1inch.NewClient()
+	client := go1inch.NewDefaultClient()
 	res, _, err := client.ApproveTransaction(
 		context.Background(),
 		1,
@@ -184,13 +185,13 @@ func TestApproveTransactionWithoutOpts(t *testing.T) {
 		nil,
 	)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	t.Log(res)
 }
 
 func TestApproveTransactionWithOpts(t *testing.T) {
-	client := go1inch.NewClient()
+	client := go1inch.NewDefaultClient()
 	res, _, err := client.ApproveTransaction(
 		context.Background(),
 		1,
@@ -200,16 +201,16 @@ func TestApproveTransactionWithOpts(t *testing.T) {
 		},
 	)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	t.Log(res)
 }
 
 func TestWBTC(t *testing.T) {
-	client := go1inch.NewClient()
-	_, code, err := client.Quote(context.Background(), 137, "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6", "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", "100000000", nil)
+	client := go1inch.NewDefaultClient()
+	_, code, _, err := client.Quote(context.Background(), 137, "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6", "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", "100000000", nil)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if code != 200 {
 		t.Error("expected 200, got ", code)

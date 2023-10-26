@@ -7,17 +7,17 @@ import (
 )
 
 // Quote gets quote for an aggregated swap which can be used with a web3 provider to send the transaction
-func (c *Client) Quote(ctx context.Context, network Network, fromTokenAddress, toTokenAddress, amount string, opts *QuoteOpts) (*QuoteRes, int, http.Header, error) {
+func (c *Client) Quote(ctx context.Context, network Network, src, dst, amount string, opts *QuoteOpts) (*QuoteRes, int, http.Header, error) {
 	endpoint := "/quote"
 
-	if fromTokenAddress == "" || toTokenAddress == "" || amount == "" {
+	if src == "" || dst == "" || amount == "" {
 		return nil, 0, nil, errors.New("required parameter is missing")
 	}
 
-	var queries = make(map[string]interface{})
+	queries := make(map[string]interface{})
 
-	queries["fromTokenAddress"] = fromTokenAddress
-	queries["toTokenAddress"] = toTokenAddress
+	queries["src"] = src
+	queries["dst"] = dst
 	queries["amount"] = amount
 
 	if opts != nil {
@@ -46,6 +46,17 @@ func (c *Client) Quote(ctx context.Context, network Network, fromTokenAddress, t
 		if opts.Parts != "" {
 			queries["parts"] = opts.Parts
 		}
+
+		if opts.IncludeGas {
+			queries["includeGas"] = true
+		}
+		if opts.IncludeProtocols {
+			queries["includeProtocols"] = true
+		}
+		if opts.IncludeTokensInfo {
+			queries["includeTokensInfo"] = true
+		}
+
 	}
 
 	var dataRes QuoteRes
